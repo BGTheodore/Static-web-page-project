@@ -14,10 +14,31 @@ var fileToAddToCache = [
 
 self.addEventListener('install',function (event){
     event.waitUntil(
-        cache.open(CACHE_NAME)
+        caches.open(CACHE_NAME)
             .then(function (cache){
-                return cache.addAll([])
-            }
-        )
+                return cache.addAll(fileToAddToCache);
+            })
     );
+});
+
+self.addEventListener('fetch', function (event){
+
+    let  externalPicRegexp = /https:\/\/picsum.photos\/(.)*/;
+
+    if(event.request.url.match(externalPicRegexp)) {
+        event.respondWith(
+            caches.match(event.request)
+                .then(function (response) {
+                    return response;
+                })
+        )
+    }
+    else{
+        event.respondWith(
+            caches.match(event.request)
+                .then(function (response){
+                    return response;
+                })
+        )
+    }
 })
